@@ -4,8 +4,10 @@ class Game < Gosu::Window
   def initialize
     super(640, 480)
     self.caption = "Bulbasaur Jump"
-    @bulbasaur = Gosu::Image.new("media/img/bulbasaur1.png")
-    @x = 270
+    @bulbasaurs = Gosu::Image.load_tiles("media/img/bulbasaur-tilesheet.png", 256, 256)
+    @count = 0
+    @bulbasaur = @bulbasaurs[@count]
+    @x = 256 - 64
     @y = 180
 
     @roof = Gosu::Image.from_blob(640, 2, rgba = "0\0\0\0" * (640*2))
@@ -26,9 +28,9 @@ class Game < Gosu::Window
     end
   end
 
-  def collision()
-    Gosu.distance(@x, @y, @x, 320 - @
-  end
+  # def collision()
+  #   Gosu.distance(@x, @y, @x, 320 - @
+  # end
 
   def jump
     def jump_up
@@ -46,19 +48,23 @@ class Game < Gosu::Window
   end
 
   def update
-    # if Gosu.button_down?(Gosu::KB_SPACE)
-    # #   @y -= 5
-    # # else
-    # #   @y += 5
-    # end
-
-    jump
-    if collision == true
-      score
+    if Gosu.button_down?(Gosu::KB_SPACE)
+      @y -= 5
+    else
+      @y += 5
     end
 
-    # @x = @x.clamp(0, width - @bulbasaur.width)
-    @y = @y.clamp(320, height - @bulbasaur.height)
+    @count += 1
+
+
+
+    # jump
+    # if collision == true
+    #   score
+    # end
+
+    @x = @x.clamp(0, width - @bulbasaur.width)
+    @y = @y.clamp(128, height - @bulbasaur.height)
 
     if Gosu.button_down?(Gosu::KB_ESCAPE)
       close
