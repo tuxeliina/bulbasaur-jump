@@ -4,9 +4,9 @@ class Game < Gosu::Window
   def initialize
     super(640, 480)
     self.caption = "Bulbasaur Jump"
-    @bulbasaurs = Gosu::Image.load_tiles("media/img/bulbasaur-tilesheet.png", 256, 256)
-    @count = 0
-    @bulbasaur = @bulbasaurs[@count]
+    @bulbasaurs = Gosu::Image.load_tiles("media/img/bulbasaur-tilesheet.png", 256, 256, tileable: true)
+    @bulbasaur = @bulbasaurs[0..10]
+    @standing_bulbasaur = @bulbasaurs[0..2]
     @x = 256 - 64
     @y = 180
 
@@ -14,61 +14,43 @@ class Game < Gosu::Window
 
     @score = 0
     @font = Gosu::Font.new(24)
+
+    @jumps = 0
   end
 
-  def draw
-    @bulbasaur.draw(@x, @y)
-    @font.draw_text("#{@score}", 10,10,10)
-    @roof.draw(0, 320 - @bulbasaur.height)
-  end
 
-  def score
-    if bulbasaur 
-      @score += 1
-    end
-  end
+  #TODO: Scoring mechnic
 
-  # def collision()
-  #   Gosu.distance(@x, @y, @x, 320 - @
-  # end
-
-  def jump
-    def jump_up
-      @y -= 5
-    end
-    def fall_down
-      @y += 5
-    end
-
-    if Gosu.button_down?(Gosu::KB_SPACE)
-      jump_up
-    else
-      fall_down
+  def button_down(id)
+    case id
+    when Gosu::KB_SPACE
+      @jumps += 1
     end
   end
 
   def update
-    if Gosu.button_down?(Gosu::KB_SPACE)
-      @y -= 5
-    else
-      @y += 5
-    end
-
-    @count += 1
-
-
-
-    # jump
-    # if collision == true
-    #   score
-    # end
-
-    @x = @x.clamp(0, width - @bulbasaur.width)
-    @y = @y.clamp(128, height - @bulbasaur.height)
+    @x = @x.clamp(0, 480)
+    @y = @y.clamp(128, 256)
 
     if Gosu.button_down?(Gosu::KB_ESCAPE)
       close
     end
+  end
+
+  def draw
+    frame_index = (Gosu.milliseconds / 100) % @bulbasaur.size
+    static_image = (Gosu.milliseconds / 250) % @standing_bulbasaur.size
+    standing_bulbasaur = @bulbasaurs[static_image]
+    animation = @bulbasaur[frame_index]
+
+    while @jumps < 1
+      standing_bulbasaur.draw(@x, @y)
+    else
+      animation.draw(@x, @y)
+    end
+
+    @font.draw_text("#{@score}", 10,10,10)
+    @roof.draw(0, 320 - animation.height)
   end
 end
 
