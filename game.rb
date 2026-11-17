@@ -5,12 +5,17 @@ class Game < Gosu::Window
     super(640, 480)
     self.caption = "Bulbasaur Jump"
     @bulbasaurs = Gosu::Image.load_tiles("media/img/bulbasaur-jumping-2.png", 256, 256, tileable: true)
+    @jump_indicator = Gosu::Image.load_tiles("media/img/jump-indicator.png", 256, 256, tileable: true)
     @bulbasaur = @bulbasaurs[0..10]
     @standing_bulbasaur = @bulbasaurs[0..2]
     @x = 256 - 64
     @y = 180
 
-    @roof = Gosu::Image.from_blob(640, 2, rgba = "0\0\0\0" * (640*2))
+    @velocity = 0
+    @gravity =  0.5
+    @is_jumping = false
+
+    # @roof = Gosu::Image.from_blob(640, 2, rgba = "0\0\0\0" * (640*2))
 
     @score = 0
     @font = Gosu::Font.new(24)
@@ -18,14 +23,13 @@ class Game < Gosu::Window
   end
 
 
-  def jump
-  end
-
   def button_down(id)
-    if id == Gosu::KB_SPACE
+    case id
+  
+    when Gosu::KB_SPACE
       @score += 1
       @start_game = false 
-      jump
+      jump unless @is_jumping
     end
 
     if id == Gosu::KB_ESCAPE
@@ -33,9 +37,24 @@ class Game < Gosu::Window
     end
   end
 
+  def jump
+    @velocity = -10
+    @is_jumping = true
+  end
+
   def update
-    @x = @x.clamp(0, 480)
-    @y = @y.clamp(128, 256)
+    # @x = @x.clamp(0, 480)
+    # @y = @y.clamp(0, 640)
+
+    if @y > 180
+      @y = 180
+      @velocity = 0
+      @is_jumping = false
+    end
+    if @is_jumping
+      @y += @velocity
+      @velocity += @gravity
+    end
   end
 
   def draw
@@ -43,8 +62,15 @@ class Game < Gosu::Window
     static_image = (Gosu.milliseconds / 250) % @standing_bulbasaur.size
     standing_bulbasaur = @bulbasaurs[static_image]
     animation = @bulbasaur[frame_index]
+    indicator = @jump_indicator[frame_index]
     @font.draw_text("#{@score}", 10,10,10)
-    @roof.draw(0, 320 - animation.height)
+    # @roof.draw(0, 320 - animation.height)
+
+    def game_over
+      animation = false
+      indicator = false
+      @font.draw_text("GAME OVER", 50, 50, 10)
+    end
 
 
     if @start_game
@@ -53,6 +79,11 @@ class Game < Gosu::Window
     else
       @font.draw_text("", 50,50,10)
       animation.draw(@x, @y)
+      indicator.draw(20, 10, 10)
+    end
+
+    if @jump_indicator[3..6] && @is_jumping == false
+      game_over
     end
 
   end
