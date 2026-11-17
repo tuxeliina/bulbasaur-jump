@@ -19,7 +19,7 @@ class Game < Gosu::Window
 
     @score = 0
     @font = Gosu::Font.new(24)
-    @start_game = true
+    @start_game = false
   end
 
 
@@ -28,7 +28,7 @@ class Game < Gosu::Window
   
     when Gosu::KB_SPACE
       @score += 1
-      @start_game = false 
+      @start_game = true 
       jump unless @is_jumping
     end
 
@@ -67,13 +67,12 @@ class Game < Gosu::Window
     # @roof.draw(0, 320 - animation.height)
 
     def game_over
-      animation = false
-      indicator = false
-      @font.draw_text("GAME OVER", 50, 50, 10)
+      # @font.draw_text("GAME OVER", 50, 50, 10)
+      close
     end
 
 
-    if @start_game
+    if !@start_game
       @font.draw_text("PRESS SPACE TO START JUMPING", 144, 50, 10)
       standing_bulbasaur.draw(@x, @y)
     else
@@ -82,7 +81,7 @@ class Game < Gosu::Window
       indicator.draw(20, 10, 10)
     end
 
-    if @jump_indicator[3..6] && @is_jumping == false
+    if @start_game && frame_index >= 4 && frame_index <= 7 && !@is_jumping
       game_over
     end
 
