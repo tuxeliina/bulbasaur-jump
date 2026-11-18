@@ -11,15 +11,20 @@ class Game < Gosu::Window
     @x = 256 - 64
     @y = 180
 
+    @bulbasaur_cry = Gosu::Sample.new(File.join(__dir__, "media/sfx/bulbasaur-cry.mp3"))
+    @jumping_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/jumping.mp3"))
+    @landing_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/landing.mp3"))
+    @bgm = Gosu::Song.new(File.join(__dir__, "media/music/2008-Toyota-Corolla.flac"))
+    @bgm.volume = 0.25
+
     @velocity = 0
     @gravity =  0.5
     @is_jumping = false
 
-    # @roof = Gosu::Image.from_blob(640, 2, rgba = "0\0\0\0" * (640*2))
-
     @score = 0
     @font = Gosu::Font.new(24)
     @start_game = false
+    @draw_character = true
   end
 
 
@@ -27,7 +32,10 @@ class Game < Gosu::Window
     case id
   
     when Gosu::KB_SPACE
-      @score += 1
+      @bgm.play if @draw_character
+      @bulbasaur_cry.play(0.25) if @score == 0
+      @jumping_sfx.play(0.25) if @draw_character && !@is_jumping
+      @score += 1 if @draw_character && !@is_jumping
       @start_game = true 
       jump unless @is_jumping
     end
@@ -50,6 +58,7 @@ class Game < Gosu::Window
       @y = 180
       @velocity = 0
       @is_jumping = false
+      @landing_sfx.play(0.25)
     end
     if @is_jumping
       @y += @velocity
@@ -66,24 +75,41 @@ class Game < Gosu::Window
     @font.draw_text("#{@score}", 10,10,10)
     # @roof.draw(0, 320 - animation.height)
 
-    def game_over
-      # @font.draw_text("GAME OVER", 50, 50, 10)
-      close
-    end
-
 
     if !@start_game
-      @font.draw_text("PRESS SPACE TO START JUMPING", 144, 50, 10)
+      @font.draw_text_rel("PRESS SPACE TO START JUMPING", width / 2, height / 5, 1, rel_x = 0.5, rel_y = 0.5)
       standing_bulbasaur.draw(@x, @y)
     else
       @font.draw_text("", 50,50,10)
-      animation.draw(@x, @y)
-      indicator.draw(20, 10, 10)
+      animation.draw(@x, @y) if @draw_character
+      indicator.draw(256 - 64, 8, 10) if @draw_character
     end
 
     if @start_game && frame_index >= 4 && frame_index <= 7 && !@is_jumping
-      game_over
+      @draw_character = false
+      @bgm.stop
     end
+
+    if !@draw_character
+      @font.draw_text_rel("GAME OVER", width / 2, height / 5, 1, rel_x = 0.5, rel_y = 0.5)
+      @font.draw_text_rel("PRESS E TO RESTART", width / 2, height / 4, 1, rel_x = 0.5, rel_y = 0.5)
+
+      if Gosu.button_down? Gosu::KB_E 
+        restart
+      end
+    end
+
+    def restart
+      @velocity = 0
+      @gravity =  0.5
+      @is_jumping = false
+      @score = 0
+      @start_game = false
+      @draw_character = true
+      @x = 256 - 64
+      @y = 180
+    end
+
 
   end
 end
