@@ -12,9 +12,9 @@ class Game < Gosu::Window
   def initialize
     super(640, 480)
     self.caption = "Bulbasaur Jump"
-    @bulbasaurs = Gosu::Image.load_tiles("media/img/bulbasaur-jumping-2.png", 256, 256, tileable: true)
-    @jump_indicator = Gosu::Image.load_tiles("media/img/jump-indicator.png", 256, 256, tileable: true)
-    @background = Gosu::Image.new(self, "media/img/alex-bg.png", false)
+    @bulbasaurs = Gosu::Image.load_tiles(File.join(__dir__, "media/img/bulbasaur-jumping-2.png"), 256, 256, tileable: true)
+    @jump_indicator = Gosu::Image.load_tiles(File.join(__dir__,"media/img/jump-indicator.png"), 256, 256, tileable: true)
+    @background = Gosu::Image.new(File.join(__dir__, "media/img/alex-bg.png"), false)
     @bulbasaur = @bulbasaurs[0..10]
     @standing_bulbasaur = @bulbasaurs[0..2]
     @x = 256 - 64
@@ -23,7 +23,7 @@ class Game < Gosu::Window
     @bulbasaur_cry = Gosu::Sample.new(File.join(__dir__, "media/sfx/bulbasaur-cry.mp3"))
     @jumping_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/jumping.mp3"))
     @landing_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/landing.mp3"))
-    @bgm = Gosu::Song.new(File.join(__dir__, "media/music/2008-Toyota-Corolla.flac"))
+    @bgm = Gosu::Song.new(File.join(__dir__, "media/music/2008-Toyota-Corolla.mp3"))
     @bgm.volume = 0.25
 
     @velocity = 0
@@ -160,4 +160,4 @@ class Game < Gosu::Window
   end
 end
 
-Game.new.show
+Game.new.show unless defined?(Ocran)
