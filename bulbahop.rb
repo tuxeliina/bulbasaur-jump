@@ -23,7 +23,7 @@ class Game < Gosu::Window
     @bulbasaur_cry = Gosu::Sample.new(File.join(__dir__, "media/sfx/bulbasaur-cry.mp3"))
     @jumping_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/jumping.mp3"))
     @landing_sfx = Gosu::Sample.new(File.join(__dir__, "media/sfx/landing.mp3"))
-    @bgm = Gosu::Song.new(File.join(__dir__, "media/music/2008-Toyota-Corolla.mp3"))
+    @bgm = Gosu::Song.new(File.join(__dir__, "media/music/2008-Toyota-Corolla.ogg"))
     @bgm.volume = 0.25
 
     @velocity = 0
@@ -100,7 +100,7 @@ class Game < Gosu::Window
       @y = 200
       @velocity = 0
       @is_jumping = false
-      @landing_sfx.play(0.25)
+      @landing_sfx.play(0.25) if @draw_character
     end
 
     if @is_jumping
