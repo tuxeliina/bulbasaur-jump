@@ -1,10 +1,3 @@
-=begin
-Name: Bulbasaur Jump
-Author: soosh
-Date: 2026-11-19
-Description: Bulbasaur wants to jump rope, can you help it jump as much as possible?
-=end
-
 require "gosu"
 
 class Game < Gosu::Window
